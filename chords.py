@@ -11,6 +11,18 @@ class Chord():
         self.degrees = degrees
 
 
+def is_minor_maj7_chord(chord_notation: str):
+    m_index = -1
+    maj_index = -1
+    if 'm' in chord_notation:
+        m_index = chord_notation.index('m')
+    if 'maj' in chord_notation:
+        maj_index = chord_notation.index('maj')
+    return not m_index == -1 and \
+        not maj_index == -1 and \
+        m_index != maj_index
+
+
 def symbols_in_chord(chord_notation: str):
     symbols = []
     for key, val in chord_intervals.items():
@@ -61,22 +73,7 @@ def clean_symbols(symbols: List[str]):
             key,
             *val
         )
-    """
-    new_symbols = remove_a_if_contains_b(new_symbols, '5',
-                                         'b5', '♭5', 'o5', 'dim5', 'dim',
-                                         '#5', '+5', 'aug5')
-    new_symbols = remove_a_if_contains_b(new_symbols, '7',
-                                         'Δ', 'Δ7', 'maj', 'Maj', 'M')
-    new_symbols = remove_a_if_contains_b(new_symbols, 'M',
-                                         'Δ', 'Δ7', 'maj', 'Maj')
-    new_symbols = remove_a_if_contains_b(new_symbols, 'Δ', 'Δ7')
-    new_symbols = remove_a_if_contains_b(new_symbols, '9',
-                                         'b9', '#9')
-    new_symbols = remove_a_if_contains_b(new_symbols, '11',
-                                         '#11')
-    new_symbols = remove_a_if_contains_b(new_symbols, '6', 'b6')
-    """
-    return remove_equal_value_symbols(new_symbols)
+    return new_symbols
 
 
 def intervals_from_chord_symbols(chord_symbols: List[str]):
@@ -118,7 +115,18 @@ def implied_fifth(chord_symbols: List[str]):
 
 
 def implied_third(chord_symbols: List[str]):
-    if 'm' in chord_symbols or '-' in chord_symbols:
+    # to-do: Instead of 'maj' or 'Maj7' here and there,
+    # create a set of constants to use in all functions.
+    print("All: ", chord_symbols)
+    if 'maj' in chord_symbols:
+        print(chord_symbols)
+        print("her", list(set(chord_symbols) - set(['maj'])))
+        if 'm' in list(set(chord_symbols) - set(['maj'])):
+            return 'b3'
+        return '3'
+    if '-' in chord_symbols:
+        return 'b3'
+    if 'm' in chord_symbols:
         return 'b3'
     return '3'
 
@@ -152,12 +160,16 @@ print()
 
 
 def degrees(chord_notation: str):
-    return implied_symbols(
-        clean_symbols(
-            symbols_in_chord(chord_notation)
+    return remove_equal_value_symbols(
+        implied_symbols(
+            clean_symbols(
+                symbols_in_chord(chord_notation)
+            )
         )
     )
 
+
+print(degrees('Dmaj9'))
 
 """
 # Flats and sharps after the root note don't yet work.

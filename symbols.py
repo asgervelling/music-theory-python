@@ -79,3 +79,9 @@ alterations = {
     'b9': 13,
 
 }
+
+synonyms = {
+    'Δ': ['Δ7', 'maj', 'Maj', 'maj7', 'Maj7', 'M'],
+    'm': ['-'],
+    'b5': ['♭5', 'o5', 'o', 'dim5', 'dim']
+}
