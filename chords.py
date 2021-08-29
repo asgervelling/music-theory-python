@@ -28,8 +28,11 @@ def is_minor_maj7_chord(chord_notation: str) -> bool:
     maj_index = -1
     if any_in_string(['m', '-'], chord_notation):
         m_index = chord_notation.index('m')
-    if 'maj' in chord_notation:
-        maj_index = chord_notation.index('maj')
+    if any_in_string(synonyms['MAJOR7'], chord_notation):
+        maj_index = next(
+            chord_notation.index(s)
+            for s in synonyms['MAJOR7'] if s in chord_notation)
+
     return not m_index == -1 and \
         not maj_index == -1 and \
         m_index != maj_index
@@ -53,7 +56,6 @@ def symbols_in_chord(chord_notation: str) -> List[str]:
         return clean_symbols(list(set(symbols) - set(['m', '-'])))
 
     if not is_minor_maj7_chord(chord_notation):
-        # symbols = list(filter(lambda x: x ==))
         return clean_symbols(symbols)
 
     return clean_symbols(symbols)
@@ -82,13 +84,14 @@ def remove_equal_value_symbols(symbols: List[str]):
 
 # These keys can't exist in a chord, if their values are present
 a_overridden_by_b = {
+    '3': ['b3', '13'],
     '5': ['b5', '♭5', 'o5', 'dim5', 'dim',
           '#5', '+5', 'aug5'],
+    '6': ['b6'],
     '7': ['Δ', 'Δ7', 'maj', 'Maj', 'M'],
     'M': ['Δ', 'Δ7', 'maj', 'Maj'],
     '9': ['b9', '#9'],
     '11': ['#11'],
-    '6': ['b6']
 }
 
 
@@ -121,8 +124,9 @@ def implied_extentions(symbol: str) -> List[str]:
         'M': ['Δ'],
         '9': ['7', '9'],
         'b9': ['7', 'b9'],
-        '11': ['9'],
-        '#11': ['9']
+        '11': ['9', '11'],
+        '#11': ['9', '#11'],
+        '13': ['9', '11', '13']
     }
     for key, val in implications.items():
         if key in chord_intervals.keys() and key == symbol:
@@ -169,8 +173,8 @@ def implied_symbols(chord_symbols: List[str], chord_notation: str) -> List[str]:
         '1', impl_third, impl_fifth,
         *impl_extentions, *chord_symbols]
 
-    print(impl_extentions, chord_symbols)
-    # It's here!:::
+    print(list(OrderedDict.fromkeys(impl_symbols)))
+    print(clean_symbols(list(OrderedDict.fromkeys(impl_symbols))))
     return clean_symbols(list(OrderedDict.fromkeys(impl_symbols)))
 
 
@@ -183,4 +187,9 @@ def degrees(chord_notation: str):
     )
 
 
-print(degrees('F#m7#9'))
+"""
+print('Dmaj9', degrees('Dmaj9'))
+print('Dmmaj9', degrees('Dmmaj9'))
+print('EbmΔ13', degrees('EbmΔ13'))
+
+"""
