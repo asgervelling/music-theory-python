@@ -1,6 +1,9 @@
-symbols = {
-    'FLAT': 'b',
-    'SHARP': '#',
+# prefer value[0]
+synonyms = {
+    'MINOR': ['m', '-'],
+    'DIMINISHED': ['b5', '♭5', 'o5', 'dim5', 'dim'],
+    'AUGMENTED': ['#5', '+5', '+', 'aug5', 'aug'],
+    'MAJOR7': ['Δ', 'Δ7', 'maj', 'maj7', 'Maj', 'Maj7', 'M']
 }
 
 chord_intervals = {
@@ -78,10 +81,4 @@ alterations = {
     'aug': 8,
     'b9': 13,
 
-}
-
-synonyms = {
-    'Δ': ['Δ7', 'maj', 'Maj', 'maj7', 'Maj7', 'M'],
-    'm': ['-'],
-    'b5': ['♭5', 'o5', 'o', 'dim5', 'dim']
 }

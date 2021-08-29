@@ -1,20 +1,32 @@
 from typing import List
 from collections import OrderedDict
 
-from symbols import chord_intervals
+from symbols import chord_intervals, synonyms
 
 
-class Chord():
+def remove_any_from_string(substrings: List[str], string: str) -> str:
+    new_string = string
+    for substring in substrings:
+        if substring in string:
+            new_string = string.replace(substring, '')
+    return new_string
 
-    def __init__(self, root_note: int, degrees: List[int]) -> None:
-        self.root_note = root_note
-        self.degrees = degrees
+
+def any_in_string(items: List[str], string: str) -> bool:
+    for item in items:
+        if item in string:
+            return True
+    return False
 
 
-def is_minor_maj7_chord(chord_notation: str):
+def symbols_with_value(value: int) -> List[str]:
+    return [k for k, v in chord_intervals.items() if v == value]
+
+
+def is_minor_maj7_chord(chord_notation: str) -> bool:
     m_index = -1
     maj_index = -1
-    if 'm' in chord_notation:
+    if any_in_string(['m', '-'], chord_notation):
         m_index = chord_notation.index('m')
     if 'maj' in chord_notation:
         maj_index = chord_notation.index('maj')
@@ -23,13 +35,28 @@ def is_minor_maj7_chord(chord_notation: str):
         m_index != maj_index
 
 
-def symbols_in_chord(chord_notation: str):
+def is_major_chord(chord_notation: str) -> bool:
+    if is_minor_maj7_chord(chord_notation):
+        return False
+    return not any_in_string(
+        ['m', '-'],
+        remove_any_from_string(synonyms['MAJOR7'], chord_notation))
+
+
+def symbols_in_chord(chord_notation: str) -> List[str]:
     symbols = []
     for key, val in chord_intervals.items():
         if key in chord_notation:
             symbols.append(key)
 
-    return symbols
+    if is_major_chord(chord_notation):
+        return clean_symbols(list(set(symbols) - set(['m', '-'])))
+
+    if not is_minor_maj7_chord(chord_notation):
+        # symbols = list(filter(lambda x: x ==))
+        return clean_symbols(symbols)
+
+    return clean_symbols(symbols)
 
 
 def remove_a_if_contains_b(items, a, b, *b_variations):
@@ -73,7 +100,7 @@ def clean_symbols(symbols: List[str]):
             key,
             *val
         )
-    return new_symbols
+    return remove_equal_value_symbols(new_symbols)
 
 
 def intervals_from_chord_symbols(chord_symbols: List[str]):
@@ -85,7 +112,7 @@ def remove_contradictory_symbols(chord_symbols: List[str]):
     pass
 
 
-def implied_extentions(symbol: str):
+def implied_extentions(symbol: str) -> List[str]:
     implications = {
         'Δ': ['Δ'],
         'Δ7': ['Δ'],
@@ -100,7 +127,7 @@ def implied_extentions(symbol: str):
     for key, val in implications.items():
         if key in chord_intervals.keys() and key == symbol:
             return clean_symbols(val)
-    return symbol
+    return [symbol]
 
 
 def implied_fifth(chord_symbols: List[str]):
@@ -114,24 +141,20 @@ def implied_fifth(chord_symbols: List[str]):
     return '5'
 
 
-def implied_third(chord_symbols: List[str]):
-    # to-do: Instead of 'maj' or 'Maj7' here and there,
-    # create a set of constants to use in all functions.
-    print("All: ", chord_symbols)
-    if 'maj' in chord_symbols:
-        print(chord_symbols)
-        print("her", list(set(chord_symbols) - set(['maj'])))
-        if 'm' in list(set(chord_symbols) - set(['maj'])):
-            return 'b3'
-        return '3'
-    if '-' in chord_symbols:
+def implied_third(chord_notation: str):
+    if is_minor_maj7_chord(chord_notation):
         return 'b3'
-    if 'm' in chord_symbols:
+    chopped = remove_any_from_string(
+        symbols_with_value(
+            chord_intervals['Δ']
+        ), chord_notation
+    )
+    if 'm' in chopped or '-' in chopped:
         return 'b3'
     return '3'
 
 
-def implied_symbols(chord_symbols: List[str]):
+def implied_symbols(chord_symbols: List[str], chord_notation: str) -> List[str]:
     highest_val = 0
     biggest_symbol = '1'
     for symbol in chord_symbols:
@@ -139,42 +162,25 @@ def implied_symbols(chord_symbols: List[str]):
             highest_val = chord_intervals[symbol]
             biggest_symbol = symbol
 
-    impl_third = implied_third(chord_symbols)
+    impl_third = implied_third(chord_notation)
     impl_fifth = implied_fifth(chord_symbols)
     impl_extentions = implied_extentions(biggest_symbol)
     impl_symbols = [
         '1', impl_third, impl_fifth,
         *impl_extentions, *chord_symbols]
 
+    print(impl_extentions, chord_symbols)
+    # It's here!:::
     return clean_symbols(list(OrderedDict.fromkeys(impl_symbols)))
 
 
-"""
-print('Am7b5', clean_symbols(symbols_in_chord('Am7b5')))
-print('Daug5', clean_symbols(symbols_in_chord('Daug5')))
-print('AMaj7#11', clean_symbols(symbols_in_chord('AMaj7#11')))
-print('EbΔ7', clean_symbols(symbols_in_chord('EbΔ7')))
-print('Eb-7b9', clean_symbols(symbols_in_chord('Eb-7b9')))
-print()
-"""
-
-
 def degrees(chord_notation: str):
-    return remove_equal_value_symbols(
+    return clean_symbols(
         implied_symbols(
-            clean_symbols(
-                symbols_in_chord(chord_notation)
-            )
+            symbols_in_chord(chord_notation),
+            chord_notation
         )
     )
 
 
-print(degrees('Dmaj9'))
-
-"""
-# Flats and sharps after the root note don't yet work.
-print('Abm7b5', degrees('Am7b5'))
-print('D9', degrees('D9'))
-print('BΔ9', degrees('BΔ9'))
-print('AbMaj7#11', degrees('AbMaj7#11'))
-"""
+print(degrees('F#m7#9'))
