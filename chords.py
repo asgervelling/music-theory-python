@@ -1,7 +1,17 @@
 from typing import List
 from collections import OrderedDict
+from functools import reduce
 
-from symbols import chord_intervals, synonyms
+from symbols import chord_intervals, synonyms, accidentals
+from notes import notes
+
+
+def root_note(chord_notation: str):
+    if len(chord_notation) < 2:
+        return chord_notation[0]
+    if is_sharp(chord_notation[:2]) or is_flat(chord_notation[:2]):
+        return chord_notation[:2]
+    return chord_notation[0]
 
 
 def remove_any_from_string(substrings: List[str], string: str) -> str:
@@ -19,15 +29,38 @@ def any_in_string(items: List[str], string: str) -> bool:
     return False
 
 
+def any_in_list(items: List[str], lst: List[str]) -> bool:
+    for item_a in items:
+        for item_b in lst:
+            if item_a == item_b:
+                return True
+    return False
+
+
 def symbols_with_value(value: int) -> List[str]:
     return [k for k, v in chord_intervals.items() if v == value]
+
+
+def is_sharp(note: str) -> bool:
+    if len(note) < 2:
+        return False
+    return note[1] in accidentals['SHARP']
+
+
+def is_flat(note: str) -> bool:
+    if len(note) < 2:
+        return False
+    return note[1] in accidentals['FLAT']
 
 
 def is_minor_maj7_chord(chord_notation: str) -> bool:
     m_index = -1
     maj_index = -1
     if any_in_string(['m', '-'], chord_notation):
-        m_index = chord_notation.index('m')
+        m_index = next(
+            chord_notation.index(s)
+            for s in synonyms['MINOR'] if s in chord_notation
+        )
     if any_in_string(synonyms['MAJOR7'], chord_notation):
         maj_index = next(
             chord_notation.index(s)
@@ -88,8 +121,8 @@ a_overridden_by_b = {
     '5': ['b5', '♭5', 'o5', 'dim5', 'dim',
           '#5', '+5', 'aug5'],
     '6': ['b6'],
-    '7': ['Δ', 'Δ7', 'maj', 'Maj', 'M'],
-    'M': ['Δ', 'Δ7', 'maj', 'Maj'],
+    '7': synonyms['MAJOR7'],
+    'M': synonyms['MAJOR7'],
     '9': ['b9', '#9'],
     '11': ['#11'],
 }
@@ -131,6 +164,7 @@ def implied_extentions(symbol: str) -> List[str]:
     for key, val in implications.items():
         if key in chord_intervals.keys() and key == symbol:
             return clean_symbols(val)
+
     return [symbol]
 
 
@@ -173,8 +207,6 @@ def implied_symbols(chord_symbols: List[str], chord_notation: str) -> List[str]:
         '1', impl_third, impl_fifth,
         *impl_extentions, *chord_symbols]
 
-    print(list(OrderedDict.fromkeys(impl_symbols)))
-    print(clean_symbols(list(OrderedDict.fromkeys(impl_symbols))))
     return clean_symbols(list(OrderedDict.fromkeys(impl_symbols)))
 
 
@@ -188,8 +220,43 @@ def degrees(chord_notation: str):
 
 
 """
-print('Dmaj9', degrees('Dmaj9'))
-print('Dmmaj9', degrees('Dmmaj9'))
-print('EbmΔ13', degrees('EbmΔ13'))
-
+MIDI
 """
+
+
+def with_midi_accidental_name(note: str) -> str:
+    if is_sharp(note):
+        return note[0] + 'S'
+    if is_flat(note):
+        return note[0] + 'F'
+    return note
+
+
+def midi_note_name(note: str, octave: int):
+    return f'{with_midi_accidental_name(note).upper()}{octave}'
+
+
+def midi_note_name_from_val(note_val: int, octave: int):
+    for key, val in chord_intervals.items():
+        if val == note_val:
+            print(val)
+            return midi_note_name(key, octave)
+    return None
+
+
+def midi_note_name_in_octave(note: str, octave: int):
+    return note + str(octave)
+
+
+def midi_note(note, octave: int) -> int:
+    if type(note) == int:
+        return notes[midi_note_name_in_octave(note, octave)]
+    return notes[midi_note_name(note, octave)]
+
+
+def midi_chord(chord_notation: str, root_note_octave: int = 4) -> List[int]:
+    degr = degrees(chord_notation)
+    intervals = [chord_intervals[deg] for deg in degr]
+    root = root_note(chord_notation)
+    root_midi = midi_note(root, root_note_octave)
+    return list(map(lambda x: x + root_midi, intervals))

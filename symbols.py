@@ -6,6 +6,12 @@ synonyms = {
     'MAJOR7': ['Δ', 'Δ7', 'maj', 'maj7', 'Maj', 'Maj7', 'M']
 }
 
+
+accidentals = {
+    'SHARP': ['#', 'S'],
+    'FLAT': ['b', '♭', 'F'],
+}
+
 chord_intervals = {
     '1': 0,
     'b2': 1,
