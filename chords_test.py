@@ -8,7 +8,7 @@ class TestChordMethods(unittest.TestCase):
 
     def test_degrees(self):
         self.assertCountEqual(chords.degrees('AbMaj7#11'), [
-                              '1', '3', '5', '9', 'Maj7', '#11'])
+                              '1', '3', '5', 'Δ', '9', '#11'])
         self.assertCountEqual(chords.degrees('Dm6'), ['1', 'b3', '5', '6'])
         self.assertCountEqual(chords.degrees('D6'), ['1', '3', '5', '6'])
         self.assertCountEqual(chords.degrees('Dm7'), ['1', 'b3', '5', '7'])
@@ -18,9 +18,9 @@ class TestChordMethods(unittest.TestCase):
             'Dm9'), ['1', 'b3', '5', '7', '9'])
         self.assertCountEqual(chords.degrees('D9'), ['1', '3', '5', '7', '9'])
         self.assertCountEqual(chords.degrees('Dmaj9'), [
-                              '1', '3', '5', 'maj', '9'])
+                              '1', '3', '5', 'Δ', '9'])
         self.assertCountEqual(chords.degrees('Dmmaj9'), [
-                              '1', 'b3', '5', 'maj', '9'])
+                              '1', 'b3', '5', 'Δ', '9'])
         self.assertCountEqual(
             chords.degrees('DmΔ11'), ['1', 'b3', '5', 'Δ', '9', '11'])
         self.assertCountEqual(chords.degrees('F#m7#9'), [

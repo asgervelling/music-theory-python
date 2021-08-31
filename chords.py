@@ -66,18 +66,33 @@ a_overridden_by_b = {
 }
 
 
+def std_name_for_symbol(symbol: str) -> str:
+    """ Choose to work with one (1) name, for cleaner functions """
+    for key, val in constants.synonyms.items():
+
+        if symbol in val:
+            return val[0]
+    return symbol
+
+
+def std_name_for_note(note: int) -> str:
+    pass
+
+
 def clean_symbols(symbols: List[str]):
     new_symbols = symbols
     for key, val in a_overridden_by_b.items():
+
         new_symbols = helpers.remove_a_if_contains_b(
             new_symbols,
             key,
             *val
         )
+
     return helpers.remove_equal_value_symbols(new_symbols)
 
 
-def intervals_from_chord_symbols(chord_symbols: List[str]):
+def intervals_from_chord_symbols(chord_symbols: List[str]) -> List[int]:
     return [constants.chord_intervals[s] for s in chord_symbols]
 
 
@@ -143,10 +158,35 @@ def implied_symbols(chord_symbols: List[str], chord_notation: str) -> List[str]:
     return clean_symbols(list(OrderedDict.fromkeys(impl_symbols)))
 
 
+def sort_degrees(degr: List[str]) -> List[str]:
+    intervals = intervals_from_chord_symbols(degr)
+    zipped = sorted(zip(intervals, degr))
+    sorted_degrees = [deg for _, deg in zipped]
+    return sorted_degrees
+
+
 def degrees(chord_notation: str) -> List[str]:
+    return sort_degrees(
+        list(map(
+            std_name_for_symbol,
+            clean_symbols(
+                implied_symbols(
+                    symbols_in_notation(chord_notation),
+                    chord_notation
+                )
+            )
+        ))
+    )
+
+
+def old_degrees(chord_notation: str) -> List[str]:
     return clean_symbols(
         implied_symbols(
             symbols_in_notation(chord_notation),
             chord_notation
         )
     )
+
+
+print(degrees('A-maj9♭5'))
+print(sort_degrees(degrees('A-maj9♭5')))

@@ -31,8 +31,8 @@ def note_name_in_octave(note: str, octave: int):
 
 def note(note, octave: int) -> int:
     if type(note) == int:
-        return notes[note_name_in_octave(note, octave)]
-    return notes[note_name(note, octave)]
+        return constants.midi_notes[note_name_in_octave(note, octave)]
+    return constants.midi_notes[note_name(note, octave)]
 
 
 def chord(chord_notation: str, root_note_octave: int = 4) -> List[int]:
