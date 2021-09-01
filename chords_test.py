@@ -2,6 +2,7 @@ import unittest
 
 import chords
 import midi
+import constants
 
 
 class TestChordMethods(unittest.TestCase):
@@ -27,6 +28,7 @@ class TestChordMethods(unittest.TestCase):
                               '1', 'b3', '5', '7', '#9'])
         self.assertCountEqual(chords.degrees('EbmΔ13'), [
                               '1', 'b3', '5', 'Δ', '9', '11', '13'])
+        print(chords.degrees('Abmajlol9#12'))
 
     def test_midi_chord(self):
         self.assertCountEqual(midi.chord('F-6'), [65, 68, 72, 74])
@@ -34,6 +36,10 @@ class TestChordMethods(unittest.TestCase):
         self.assertCountEqual(midi.chord('B9'), [71, 75, 78, 81, 85])
         self.assertCountEqual(midi.chord('C'), [60, 64, 67])
         self.assertCountEqual(midi.chord('Cmaj9'), [60, 64, 67, 71, 74])
+
+    def test_validate_chord_notation(self):
+        self.assertEqual(chords.validate_chord_notation(
+            'AbMaj9'), constants.OK)
 
 
 if __name__ == '__main__':

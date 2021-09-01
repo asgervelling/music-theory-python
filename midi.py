@@ -3,9 +3,11 @@ from typing import List
 import notes
 import constants
 import chords
+from exceptions import InvalidChordException
 
 
 def with_accidental_name(note: str) -> str:
+    """ 'Ab' -> 'AF'; F# -> FS """
     if notes.is_sharp(note):
         return note[0] + 'S'
     if notes.is_flat(note):
@@ -30,14 +32,23 @@ def note_name_in_octave(note: str, octave: int):
 
 
 def note(note, octave: int) -> int:
-    if type(note) == int:
-        return constants.midi_notes[note_name_in_octave(note, octave)]
-    return constants.midi_notes[note_name(note, octave)]
+    try:
+        if type(note) == int:
+            return constants.midi_notes[note_name_in_octave(note, octave)]
+        return constants.midi_notes[note_name(note, octave)]
+    except KeyError:
+        raise InvalidChordException(
+            f'{constants.ERROR}: KeyError in midi.note(note={note}, octave={octave})')
 
 
 def chord(chord_notation: str, root_note_octave: int = 4) -> List[int]:
-    degr = chords.degrees(chord_notation)
-    intervals = [constants.chord_intervals[deg] for deg in degr]
-    root = notes.root_note_simple_name(chord_notation)
-    root_midi = note(root, root_note_octave)
-    return list(map(lambda x: x + root_midi, intervals))
+    try:
+        degr = chords.degrees(chord_notation)
+        intervals = [constants.chord_intervals[deg] for deg in degr]
+        root = notes.root_note_simple_name(chord_notation)
+        root_midi = note(root, root_note_octave)
+        return list(map(lambda x: x + root_midi, intervals))
+
+    # Top level function handles the exception
+    except InvalidChordException as e:
+        return [str(e)]

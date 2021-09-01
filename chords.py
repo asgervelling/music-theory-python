@@ -1,10 +1,12 @@
 from typing import List
 from collections import OrderedDict
 from functools import reduce
+import re
 
 import constants
 import notes
 import helpers
+from exceptions import InvalidChordException
 
 
 def symbols_with_value(value: int) -> List[str]:
@@ -42,7 +44,6 @@ def symbols_in_notation(chord_notation: str) -> List[str]:
     for key, val in constants.chord_intervals.items():
         if key in chord_notation:
             symbols.append(key)
-
     if is_major_chord(chord_notation):
         return clean_symbols(list(set(symbols) - set(['m', '-'])))
 
@@ -69,7 +70,6 @@ a_overridden_by_b = {
 def std_name_for_symbol(symbol: str) -> str:
     """ Choose to work with one (1) name, for cleaner functions """
     for key, val in constants.synonyms.items():
-
         if symbol in val:
             return val[0]
     return symbol
@@ -82,7 +82,6 @@ def std_name_for_note(note: int) -> str:
 def clean_symbols(symbols: List[str]):
     new_symbols = symbols
     for key, val in a_overridden_by_b.items():
-
         new_symbols = helpers.remove_a_if_contains_b(
             new_symbols,
             key,
@@ -94,6 +93,11 @@ def clean_symbols(symbols: List[str]):
 
 def intervals_from_chord_symbols(chord_symbols: List[str]) -> List[int]:
     return [constants.chord_intervals[s] for s in chord_symbols]
+
+
+def altered_extentions(chord_notation: str):
+    captured_groups = re.findall(r'((#|b)\d+)', chord_notation)
+    return [i[0] for i in captured_groups]
 
 
 def implied_extentions(symbol: str) -> List[str]:
@@ -155,7 +159,40 @@ def implied_symbols(chord_symbols: List[str], chord_notation: str) -> List[str]:
         '1', impl_third, impl_fifth,
         *impl_extentions, *chord_symbols]
 
-    return clean_symbols(list(OrderedDict.fromkeys(impl_symbols)))
+    return list(OrderedDict.fromkeys(impl_symbols))
+
+
+def validate_chord_notation(chord_notation: str):
+    unused = chord_notation
+    root_note = notes.root_note_simple_name(chord_notation)
+    unused = unused.replace(root_note, '')
+
+    altered_notes = altered_extentions(chord_notation)
+    numbers = re.findall(r'\d+', chord_notation)
+
+    for n in altered_notes:
+        if not n in constants.valid_chord_symbols:
+            raise InvalidChordException(
+                f'{constants.ERROR} in {chord_notation}: {n} is not a valid chord symbol.'
+            )
+        unused = unused.replace(n, '')
+
+    implied = implied_symbols(
+        symbols_in_notation(chord_notation), chord_notation)
+
+    for impl in implied:
+        if impl in chord_notation:
+            unused = unused.replace(impl, '')
+
+    if helpers.any_in_string([*constants.accidentals['FLAT'], *constants.accidentals['SHARP']], unused):
+        print("Yes:", unused)
+
+    # What's left is a wrong symbol
+    if unused != '':
+        raise InvalidChordException(
+            f'{constants.ERROR} in {chord_notation}: unrecognized symbol "{unused}".')
+
+    return constants.OK
 
 
 def sort_degrees(degr: List[str]) -> List[str]:
@@ -165,8 +202,11 @@ def sort_degrees(degr: List[str]) -> List[str]:
     return sorted_degrees
 
 
+# https://pypi.org/project/didyoumean3/
+
 def degrees(chord_notation: str) -> List[str]:
-    return sort_degrees(
+    validate_chord_notation(chord_notation)
+    degr = sort_degrees(
         list(map(
             std_name_for_symbol,
             clean_symbols(
@@ -177,16 +217,4 @@ def degrees(chord_notation: str) -> List[str]:
             )
         ))
     )
-
-
-def old_degrees(chord_notation: str) -> List[str]:
-    return clean_symbols(
-        implied_symbols(
-            symbols_in_notation(chord_notation),
-            chord_notation
-        )
-    )
-
-
-print(degrees('A-maj9♭5'))
-print(sort_degrees(degrees('A-maj9♭5')))
+    return degr
