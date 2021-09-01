@@ -1,5 +1,7 @@
 from typing import List
+
 import constants
+from exceptions import InvalidChordException
 
 
 def remove_any_from_string(substrings: List[str], string: str) -> str:

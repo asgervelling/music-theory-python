@@ -1,4 +1,8 @@
 import chords
 import midi
 
-print(chords.validate_chord_notation('Abmaj8'))
+print(chords.degrees('AbMaj12#16'))
+print(midi.chord('Gbdim8'))
+print(midi.chord('Gdim8'))
+print(midi.chord('D#mMaj91'))
+print(midi.chord('D'))

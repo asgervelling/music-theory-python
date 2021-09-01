@@ -1,3 +1,5 @@
+import re
+
 import constants
 
 
@@ -14,8 +16,5 @@ def is_flat(note: str) -> bool:
 
 
 def root_note_simple_name(chord_notation: str) -> str:
-    if len(chord_notation) < 2:
-        return chord_notation[0]
-    if is_sharp(chord_notation[:2]) or is_flat(chord_notation[:2]):
-        return chord_notation[:2]
-    return chord_notation[0]
+    """ 'A#7b9' -> 'A#' """
+    return re.search(r'^[A-G](#|b|♭)?', chord_notation).group()

@@ -88,7 +88,13 @@ def clean_symbols(symbols: List[str]):
             *val
         )
 
-    return helpers.remove_equal_value_symbols(new_symbols)
+    try:
+        return list(map(
+            std_name_for_symbol,
+            helpers.remove_equal_value_symbols(new_symbols)))
+    except KeyError as e:
+        raise InvalidChordException(
+            f'{constants.ERROR}: Invalid chord symbol "{e.args[0]}"')
 
 
 def intervals_from_chord_symbols(chord_symbols: List[str]) -> List[int]:
@@ -154,45 +160,16 @@ def implied_symbols(chord_symbols: List[str], chord_notation: str) -> List[str]:
 
     impl_third = implied_third(chord_notation)
     impl_fifth = implied_fifth(chord_symbols)
-    impl_extentions = implied_extentions(biggest_symbol)
+    impl_extentions = list(set(
+        implied_extentions(
+            biggest_symbol) + altered_extentions(chord_notation)
+    ))
+
     impl_symbols = [
         '1', impl_third, impl_fifth,
         *impl_extentions, *chord_symbols]
 
     return list(OrderedDict.fromkeys(impl_symbols))
-
-
-def validate_chord_notation(chord_notation: str):
-    unused = chord_notation
-    root_note = notes.root_note_simple_name(chord_notation)
-    unused = unused.replace(root_note, '')
-
-    altered_notes = altered_extentions(chord_notation)
-    numbers = re.findall(r'\d+', chord_notation)
-
-    for n in altered_notes:
-        if not n in constants.valid_chord_symbols:
-            raise InvalidChordException(
-                f'{constants.ERROR} in {chord_notation}: {n} is not a valid chord symbol.'
-            )
-        unused = unused.replace(n, '')
-
-    implied = implied_symbols(
-        symbols_in_notation(chord_notation), chord_notation)
-
-    for impl in implied:
-        if impl in chord_notation:
-            unused = unused.replace(impl, '')
-
-    if helpers.any_in_string([*constants.accidentals['FLAT'], *constants.accidentals['SHARP']], unused):
-        print("Yes:", unused)
-
-    # What's left is a wrong symbol
-    if unused != '':
-        raise InvalidChordException(
-            f'{constants.ERROR} in {chord_notation}: unrecognized symbol "{unused}".')
-
-    return constants.OK
 
 
 def sort_degrees(degr: List[str]) -> List[str]:
@@ -205,16 +182,17 @@ def sort_degrees(degr: List[str]) -> List[str]:
 # https://pypi.org/project/didyoumean3/
 
 def degrees(chord_notation: str) -> List[str]:
-    validate_chord_notation(chord_notation)
-    degr = sort_degrees(
-        list(map(
-            std_name_for_symbol,
+    # validate_chord_notation(chord_notation)
+    try:
+        degr = sort_degrees(
             clean_symbols(
                 implied_symbols(
                     symbols_in_notation(chord_notation),
                     chord_notation
                 )
             )
-        ))
-    )
-    return degr
+        )
+
+        return degr
+    except (InvalidChordException, KeyError) as e:
+        raise InvalidChordException(e)
