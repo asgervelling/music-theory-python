@@ -19,12 +19,20 @@ def note_name(note: str, octave: int):
     return f'{with_accidental_name(note).upper()}{octave}'
 
 
-def note_name_from_val(note_val: int, octave: int):
-    for key, val in constants.chord_intervals.items():
+def note_name_from_val(note_val: int, octave: int) -> str:
+    for key, val in constants.midi_notes.items():
         if val == note_val:
-            print(val)
             return note_name(key, octave)
     return None
+
+
+def note_names_from_val(note_val: int, octave: int) -> List[str]:
+    """ Names of pitch constants with value and octave """
+    names = [key for key, val
+             in constants.midi_notes.items()
+             if val == note_val]
+
+    return names
 
 
 def note_name_in_octave(note: str, octave: int):
@@ -45,7 +53,7 @@ def chord(chord_notation: str, root_note_octave: int = 4) -> List[int]:
     try:
         degr = chords.degrees(chord_notation)
         intervals = [constants.chord_intervals[deg] for deg in degr]
-        root = notes.root_note_simple_name(chord_notation)
+        root = notes.root_note_std_name(chord_notation)
         root_midi = note(root, root_note_octave)
         return list(map(lambda x: x + root_midi, intervals))
 

@@ -1,4 +1,3 @@
-from midi import chord
 from typing import List
 from collections import OrderedDict
 from functools import reduce
@@ -6,6 +5,7 @@ import re
 
 import constants
 import helpers
+import notes
 from exceptions import InvalidChordException
 
 
@@ -69,18 +69,6 @@ a_overridden_by_b = {
 }
 
 
-def std_name_for_symbol(symbol: str) -> str:
-    """ Choose to work with one (1) name, for cleaner functions """
-    for val in constants.synonyms.values():
-        if symbol in val:
-            return val[0]
-    return symbol
-
-
-def std_name_for_note(note: int) -> str:
-    pass
-
-
 def clean_symbols(symbols: List[str]):
     new_symbols = symbols
     for key, val in a_overridden_by_b.items():
@@ -92,7 +80,7 @@ def clean_symbols(symbols: List[str]):
 
     try:
         return list(map(
-            std_name_for_symbol,
+            notes.std_name_for_symbol,
             helpers.remove_equal_value_symbols(new_symbols)))
     except KeyError as e:
         raise InvalidChordException(
@@ -146,7 +134,7 @@ def implied_fifth(chord_symbols: List[str]):
 
 def implied_third(chord_notation: str):
     if is_minor_maj7_chord(chord_notation):
-        return std_name_for_symbol('m')
+        return notes.std_name_for_symbol('m')
 
     # Check whether 'm' for 'minor' is in the notation,
     # or if it's just the 'm' from 'maj'
@@ -156,8 +144,8 @@ def implied_third(chord_notation: str):
         ), chord_notation
     )
     if 'm' in chopped or '-' in chopped:
-        return std_name_for_symbol('m')
-    return std_name_for_symbol('3')
+        return notes.std_name_for_symbol('m')
+    return notes.std_name_for_symbol('3')
 
 
 def is_major7_chord(chord_notation: str) -> bool:
@@ -199,7 +187,7 @@ def number_after_sus(chord_notation: str):
 
 def implied_seventh(chord_notation: str):
     if is_major7_chord(chord_notation):
-        return std_name_for_symbol('Maj7')
+        return notes.std_name_for_symbol('Maj7')
 
 
 # For now, this only supports a single add-symbol

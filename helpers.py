@@ -46,3 +46,9 @@ def remove_equal_value_symbols(symbols: List[str]):
             found_values.append(constants.chord_intervals[symbol])
             new_symbols.append(symbol)
     return new_symbols
+
+
+def replace_if_exists(string: str, old, new) -> str:
+    if old == None or new == None:
+        return string
+    return string.replace(old, new)
