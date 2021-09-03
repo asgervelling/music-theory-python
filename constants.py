@@ -2,7 +2,7 @@ ERROR = 'ERROR'
 OK = 'OK'
 
 synonyms = {
-    'MINOR': ['m', '-'],
+    'MINOR': ['m', '-', 'b3'],
     'DIMINISHED': ['b5', '♭5', 'o5', 'dim5', 'dim'],
     'AUGMENTED': ['#5', '+5', '+', 'aug5', 'aug'],
     'MAJOR7': ['Δ', 'Δ7', 'maj', 'maj7', 'Maj', 'Maj7', 'M']
@@ -13,6 +13,38 @@ accidentals = {
     'SHARP': ['#', 'S'],
     'FLAT': ['b', '♭', 'F'],
 }
+
+extentions = {
+    'b9': 13,
+    '♭9': 13,
+    '9': 14,
+    '#9': 15,
+    '11': 17,
+    '#11': 18,
+    'b13': 20,
+    '♭13': 20,
+    '13': 21,
+    '#13': 22,
+}
+
+alterations = {
+    '#4': 6,
+    'b5': 6,
+    '♭5': 6,
+    'o5': 6,
+    'dim5': 6,
+    'dim': 6,
+    '#5': 8,
+    '+5': 8,
+    '+': 8,
+    'aug5': 8,
+    'aug': 8,
+    'b6': 8,
+    '♭6': 8,
+}
+
+# These numbers are valid in an 'addX'-symbol, ie. 'D-add9'
+valid_add_numbers = ['2', '4', '6', '9', '11', '13']
 
 chord_intervals = {
     '1': 0,
@@ -58,7 +90,8 @@ chord_intervals = {
     '#13': 22,
 }
 
-valid_chord_symbols = ['m', '-', '4',
+valid_chord_symbols = ['sus', 'sus4', 'sus2',
+                       'm', '-', '4',
                        '#4', 'b5', '♭5', 'o5', 'dim5', 'dim', '5',
                        '#5', '+5', '+', 'aug5', 'aug', 'b6', '6',
                        '7', 'Δ', 'Δ7', 'maj', 'maj7', 'Maj', 'Maj7', 'M',

@@ -1,8 +1,15 @@
 import chords
 import midi
 
-print(chords.degrees('AbMaj12#16'))
-print(midi.chord('Gbdim8'))
-print(midi.chord('Gdim8'))
-print(midi.chord('D#mMaj91'))
-print(midi.chord('D'))
+
+def debug(chord_notation):
+    print(f'{chord_notation}:', chords.degrees(chord_notation))
+
+
+debug('Esus')
+debug('Esus4add9')
+debug('Fadd4')
+debug('DMaj13')
+
+# print(chords.degrees('E9sus4'))
+# print(chords.degrees('EMaj9'))
