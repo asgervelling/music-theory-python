@@ -1,11 +1,10 @@
 from typing import List
-from collections import OrderedDict
-from functools import reduce
 import re
 
 import constants
 import helpers
 import notes
+import scales
 from exceptions import InvalidChordException
 
 
@@ -57,7 +56,6 @@ def symbols_in_notation(chord_notation: str) -> List[str]:
 
 # These keys can't exist in a chord, if their values are present
 a_overridden_by_b = {
-    '3': ['b3', '13'],
     '5': ['b5', '♭5', 'o5', 'dim5', 'dim',
           '#5', '+5', 'aug5'],
     '6': ['b6'],
@@ -69,6 +67,14 @@ a_overridden_by_b = {
 }
 
 
+def without_root_note(chord_notation: str) -> str:
+    try:
+        return re.search(r'^[A-G](#|b|♭)?', chord_notation).group()
+    except AttributeError:
+        raise InvalidChordException(
+            f'No root note found for "{chord_notation}"')
+
+
 def clean_symbols(symbols: List[str]):
     new_symbols = symbols
     for key, val in a_overridden_by_b.items():
@@ -77,7 +83,6 @@ def clean_symbols(symbols: List[str]):
             key,
             *val
         )
-
     try:
         return list(map(
             notes.std_name_for_symbol,
@@ -93,7 +98,8 @@ def intervals_from_chord_symbols(chord_symbols: List[str]) -> List[int]:
 
 def altered_extentions(chord_notation: str) -> List[str]:
     """ Find all symbols with accidentals such as 'b9' or '(#11)' """
-    captured_groups = re.findall(r'((#|b|♭)\d+)', chord_notation)
+    captured_groups = re.findall(
+        r'((#|b|♭)\d+)', without_root_note(chord_notation))
     return [i[0] for i in captured_groups]
 
 
@@ -229,6 +235,7 @@ def first_assumptions(chord_symbols: List[str], chord_notation: str) -> List[str
         *impl_extentions,
         *chord_symbols
     ]
+
     return impl_symbols
 
 
@@ -266,6 +273,7 @@ def implied_symbols(chord_notation: str) -> List[str]:
         chord_notation)
 
     impl_symbols = correct_first_assumptions(bold_assumptions, chord_notation)
+
     return list(set(impl_symbols))
 
 
@@ -275,6 +283,15 @@ def sort_degrees(degr: List[str]) -> List[str]:
     zipped = sorted(zip(intervals, degr))
     sorted_degrees = [deg for _, deg in zipped]
     return sorted_degrees
+
+
+def sort_notes(notes_to_sort: List[str]):
+    indices = []
+    for i in range(len(notes_to_sort)):
+        indices.append(scales.find_note_index(
+            scales.note_names, notes_to_sort[i]))
+
+    return [x for _, x in sorted(zip(indices, notes_to_sort))]
 
 
 def degrees(chord_notation: str) -> List[str]:
@@ -289,3 +306,26 @@ def degrees(chord_notation: str) -> List[str]:
         return degr
     except (InvalidChordException, KeyError) as e:
         raise InvalidChordException(e)
+
+
+class Chord():
+
+    def __init__(self, chord_notation: str):
+        self.chord_notation = chord_notation
+
+    def degrees(self):
+        return degrees(self.chord_notation)
+
+    def notes(self):
+        return list(map(notes.std_name_for_note, self.midi_notes()))
+
+    def midi_notes(self, octave=4):
+        return midi.chord(self.chord_notation, octave)
+
+    def __repr__(self):
+        return f"""
+    {self.chord_notation}:
+    Degrees:     {self.degrees()}            
+    Notes:       {self.notes()}
+    MIDI values: {self.midi_notes()}
+        """

@@ -22,7 +22,7 @@ def note_name(note: str, octave: int):
 def note_name_from_val(note_val: int, octave: int) -> str:
     for key, val in constants.midi_notes.items():
         if val == note_val:
-            return note_name(key, octave)
+            return key
     return None
 
 
@@ -60,3 +60,7 @@ def chord(chord_notation: str, root_note_octave: int = 4) -> List[int]:
     # Top level function handles the exception
     except InvalidChordException as e:
         return [str(e)]
+
+
+def notation_from_midi(midi_values: List[int], root_note: str):
+    print(note(val, 4) for val in midi_values)

@@ -36,11 +36,12 @@ def std_name_for_note(midi_value: int) -> str:
     avoid_these = ['ES', 'FF', 'BS', 'CF']
     preferred_midi_names = [n for n in midi_notes if n[:2] not in avoid_these]
 
+    """
     if len(preferred_midi_names) > 1:
         print(
             'WARNING: More than one accepted standard name for note with value ', midi_value)
         print(preferred_midi_names)
-
+    """
     # to do: Choose between sharps and flats
 
     name = preferred_midi_names[0]

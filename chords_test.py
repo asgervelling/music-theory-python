@@ -12,7 +12,7 @@ class TestChordMethods(unittest.TestCase):
         self.assertCountEqual(chords.degrees('Dm6'), ['1', 'm', '5', '6'])
         self.assertCountEqual(chords.degrees('D6'), ['1', '3', '5', '6'])
         self.assertCountEqual(chords.degrees('Dm7'), ['1', 'm', '5', '7'])
-        self.assertCountEqual(chords.degrees('D7'), ['1', '3', '5', '7'])
+        self.assertCountEqual(chords.degrees('D#7'), ['1', '3', '5', '7'])
         self.assertCountEqual(chords.degrees('DΔ7'), ['1', '3', '5', 'Δ'])
         self.assertCountEqual(chords.degrees(
             'Dm9'), ['1', 'm', '5', '7', '9'])
@@ -26,7 +26,7 @@ class TestChordMethods(unittest.TestCase):
         self.assertCountEqual(chords.degrees('F#m7#9'), [
                               '1', 'm', '5', '7', '#9'])
         self.assertCountEqual(chords.degrees('EbmΔ13'), [
-                              '1', 'm', '5', 'Δ', '9', '11', '13'])
+                              '1', 'm', '3', '5', 'Δ', '9', '11', '13'])
 
         # sus functionality
         self.assertCountEqual(chords.degrees('Esus2'), ['1', '2', '5'])
