@@ -33,13 +33,7 @@ class Chord():
         note_names = chords.sort_notes(list(set(self.notes() + other.notes())))
 
         midi_values = sorted(list(set(self.midi_notes() + other.midi_notes())))
-
-        print(note_names)
-        print(midi_values)
-
-        print(scales.interval_between('E', 'C'))
-        print(scales.interval_between('C', 'E'))
-
+        # print(degrs, note_names, midi_values)
         # To-do: find chord notations based on notes in chord or midi values
         return self
 

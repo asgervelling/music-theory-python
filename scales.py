@@ -1,6 +1,10 @@
 from pprint import pprint
+from typing import List
 
 from exceptions import InvalidChordException
+import helpers
+import constants
+import notes
 
 steps = [
     ['1', 'bb2'],
@@ -15,7 +19,6 @@ steps = [
     ['6', 'bb7',  '13'],
     ['b7',  '#6'],
     ['7',  'b8'],
-    ['8',  '#7'],
 ]
 
 formulas = {
@@ -52,12 +55,19 @@ def find_note_index(scale, search_note):
     raise InvalidChordException(f'Invalid note "{search_note}"')
 
 
-def interval_between(note_a, note_b):
+def interval_between_notes(note_a, note_b):
     index_a = find_note_index(note_names, note_a)
     index_b = find_note_index(note_names, note_b)
     index_sum = (-1 * (index_a - index_b) + 12) % 12
     print(f'{note_a} to {note_b}: {steps[index_sum][0]}')
     return steps[index_sum][0]
+
+
+def interval_between_symbols(symbol_a, symbol_b):
+    index_a = find_note_index(constants.chord_intervals, symbol_a)
+    index_b = find_note_index(constants.chord_intervals, symbol_b)
+    print(f'a: ({symbol_a}, {index_a})')
+    print(f'b: ({symbol_b}, {index_b})')
 
 
 def rotate(scale, n):

@@ -5,6 +5,7 @@ import constants
 import helpers
 import notes
 import scales
+import midi
 from exceptions import InvalidChordException
 
 
@@ -96,14 +97,14 @@ def intervals_from_chord_symbols(chord_symbols: List[str]) -> List[int]:
     return [constants.chord_intervals[s] for s in chord_symbols]
 
 
-def altered_extentions(chord_notation: str) -> List[str]:
+def altered_extensions(chord_notation: str) -> List[str]:
     """ Find all symbols with accidentals such as 'b9' or '(#11)' """
     captured_groups = re.findall(
         r'((#|b|♭)\d+)', without_root_note(chord_notation))
     return [i[0] for i in captured_groups]
 
 
-def implied_extentions(symbol: str) -> List[str]:
+def implied_extensions(symbol: str) -> List[str]:
     """ If a chord contains a 13, it must contain a 7/Maj7, 9 and 11, 
         unless the chord is an added note chord """
     implications = {
@@ -223,16 +224,16 @@ def first_assumptions(chord_symbols: List[str], chord_notation: str) -> List[str
     impl_fifth = implied_fifth(chord_symbols)
     # impl_seventh = implied_seventh(chord_symbols)
 
-    impl_extentions = list(set(
-        implied_extentions(largest_symbol(chord_symbols)) +
-        altered_extentions(chord_notation)
+    impl_extensions = list(set(
+        implied_extensions(largest_symbol(chord_symbols)) +
+        altered_extensions(chord_notation)
     ))
 
     impl_symbols = [
         '1',
         impl_third,
         impl_fifth,
-        *impl_extentions,
+        *impl_extensions,
         *chord_symbols
     ]
 
@@ -266,7 +267,7 @@ def correct_first_assumptions(chord_symbols: List[str], chord_notation: str) -> 
 
 
 def implied_symbols(chord_notation: str) -> List[str]:
-    """ Returns a list without duplicates containing the  """
+    """ Returns a list without duplicates containing the symbols in a chord """
     rough_draft = symbols_in_notation(chord_notation)
     bold_assumptions = first_assumptions(
         rough_draft,

@@ -14,7 +14,13 @@ accidentals = {
     'FLAT': ['b', '♭', 'F'],
 }
 
-extentions = {
+diatonic_extensions = {
+    '9': 14,
+    '11': 17,
+    '13': 21,
+}
+
+extensions_beyond_7 = {
     'b9': 13,
     '♭9': 13,
     '9': 14,

@@ -7,8 +7,10 @@ from exceptions import InvalidChordException
 class TestChordMethods(unittest.TestCase):
 
     def test_degrees(self):
+        print(chords.Chord('D#7'))
         self.assertCountEqual(chords.degrees('AbMaj7#11'), [
                               '1', '3', '5', 'Δ', '9', '#11'])
+
         self.assertCountEqual(chords.degrees('Dm6'), ['1', 'm', '5', '6'])
         self.assertCountEqual(chords.degrees('D6'), ['1', '3', '5', '6'])
         self.assertCountEqual(chords.degrees('Dm7'), ['1', 'm', '5', '7'])
