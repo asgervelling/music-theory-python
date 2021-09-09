@@ -46,6 +46,10 @@ def is_tertian(chord_symbols: List[str]) -> bool:
     return True
 
 
+def is_symbol_diatonic(chord_symbol: str) -> bool:
+    return chord_symbol in constants.diatonic_extensions
+
+
 def has_only_extentions_above_7(chord_symbols: List[str]) -> bool:
     """ Check if the extentions of a chord are all above the 7th. """
     if len(chord_symbols) < 4:
@@ -59,7 +63,8 @@ def is_add_chord(chord_symbols: List[str]) -> bool:
         '7' not in chord_symbols and \
         not is_tertian(chord_symbols) and \
         not is_sus_chord(chord_symbols) and \
-        has_only_extentions_above_7(chord_symbols)
+        has_only_extentions_above_7(chord_symbols) and \
+        is_symbol_diatonic(chord_symbols[3])
 
 
 def sus_symbol(chord_symbols: List[str]) -> str:
@@ -79,7 +84,6 @@ def add_symbol(chord_symbols: List[str]):
 
 
 def implied_diatonic_extensions(chord_symbols: List[str]) -> List[str]:
-    print(chord_symbols)
     """ Returns the implied diatonic extensions of a chord symbol. 'Cm11' -> ['7', '9', '11'] """
     diatonic_extensions = [
         symbol for symbol in chord_symbols if symbol in constants.diatonic_extensions]
@@ -130,12 +134,3 @@ def chord_notation(root_note, chord_symbols):
         add if add != '' else largest_diatonic_ext
     ])
     return implied_diatonic_extensions(chord_symbols)
-
-
-print(chord_notation('C', ['1', '3', '5', '7', '9', '11']))
-print(chord_notation('C', ['1', 'm', '5', '7', '9', '11']))
-print(chord_notation('C', ['1', '3', '5', 'maj', '9', '11']))
-print(chord_notation('C', ['1', '3', '5', '9']))
-print(chord_notation('C', ['1', '3', '5', '9']))
-
-is_tertian(['1', '3', '5', '7', '9', '11'])

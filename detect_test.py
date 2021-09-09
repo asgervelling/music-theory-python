@@ -53,13 +53,14 @@ class TestDetectMethods(unittest.TestCase):
 
     def test_is_add_chord(self):
         self.assertTrue(is_add_chord(['1', '3', '5', '9']))
-        self.assertTrue(is_add_chord(['1', '3', '5', 'b13']))
         self.assertTrue(is_add_chord(['1', '3', '5', '11']))
         self.assertFalse(is_add_chord(['1', '3', '5']))
         self.assertFalse(is_add_chord(['1', '4', '5']))
         self.assertFalse(is_add_chord(['1', '2', '5']))
         self.assertFalse(is_add_chord(['1', '3', '5', '7']))
         self.assertFalse(is_add_chord(['1', '3', '5', '7', '9']))
+        self.assertFalse(is_add_chord(['1', '3', '5', '9', '11']))
+        self.assertFalse(is_add_chord(['1', '3', '5', 'b13']))
 
 
 if __name__ == '__main__':
