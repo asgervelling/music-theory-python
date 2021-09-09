@@ -46,25 +46,52 @@ def is_tertian(chord_symbols: List[str]) -> bool:
     return True
 
 
+def non_tertian_symbols(chord_symbols: List[str]):
+    non_tertian = []
+    for i in range(len(chord_symbols) - 1):
+        a = chord_symbols[i]
+        b = chord_symbols[i+1]
+        if not is_interval(3, a, b) and not is_interval(4, a, b):
+            non_tertian.append(b)
+    print(non_tertian)
+    return non_tertian
+
+
+non_tertian_symbols(['1', '3', '5', '7', '9'])
+non_tertian_symbols(['1', '3', '5', '9'])
+non_tertian_symbols(['1', '4', '5'])
+non_tertian_symbols(['1', '3', '4', '5'])
+
+
 def is_symbol_diatonic(chord_symbol: str) -> bool:
     return chord_symbol in constants.diatonic_extensions
 
 
-def has_only_extentions_above_7(chord_symbols: List[str]) -> bool:
-    """ Check if the extentions of a chord are all above the 7th. """
-    if len(chord_symbols) < 4:
+def extentions_are_add_valid(chord_symbols: List[str]) -> bool:
+    if len(chord_symbols) != 4:
         return False
-    symbols = chord_symbols[3:]
-    return all(map(lambda x: x in constants.extensions_beyond_7, symbols))
+    if helpers.any_in_list(['2', '4'], chord_symbols) and \
+            helpers.any_in_list(constants.synonyms['MINOR'] + ['3'], chord_symbols):
+        return True
+
+    # to-do: Add symbol is not necessarily at index 3, it might be at index 1 ('2', or '4')
+    return chord_symbols[3] in constants.diatonic_extensions.keys()
 
 
 def is_add_chord(chord_symbols: List[str]) -> bool:
+    """ 'An added tone chord, or added note chord, is a non-tertian chord 
+        composed of a tertian triad and an extra "added" note. 
+        The added note is not a seventh (three thirds from the chord root),
+        but typically a non-tertian note, which cannot be defined by a sequence of thirds from the root,
+        such as the added sixth' - WIkipedia.
+
+        However this method will only return true if the extention
+        is above the 7th degree. That's because in practice, you would
+        never write Aadd6, you would just call it A6. """
     return len(chord_symbols) == 4 and \
         '7' not in chord_symbols and \
         not is_tertian(chord_symbols) and \
-        not is_sus_chord(chord_symbols) and \
-        has_only_extentions_above_7(chord_symbols) and \
-        is_symbol_diatonic(chord_symbols[3])
+        extentions_are_add_valid(chord_symbols)
 
 
 def sus_symbol(chord_symbols: List[str]) -> str:

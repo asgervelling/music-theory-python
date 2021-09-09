@@ -45,11 +45,15 @@ class TestDetectMethods(unittest.TestCase):
         self.assertFalse(is_tertian(['1', '3', '5', '6']))
         self.assertFalse(is_tertian(['1', '4', '5']))
 
-    def test_has_only_extentions_above_7(self):
-        self.assertTrue(has_only_extentions_above_7(['1', '3', '5', 'b9']))
-        self.assertTrue(has_only_extentions_above_7(['1', '4', '5', '9']))
-        self.assertFalse(has_only_extentions_above_7(
+    def test_extentions_are_add_valid(self):
+        self.assertFalse(extentions_are_add_valid(['1', '3', '5', 'b9']))
+        self.assertTrue(extentions_are_add_valid(['1', '4', '5', '9']))
+        self.assertFalse(extentions_are_add_valid(
             [['1', '3', '5', '7', 'b9']]))
+
+    def test_add_symbol(self):
+        self.assertEqual(add_symbol(['1', '4', '5', '9']), 'add9')
+        self.assertEqual(add_symbol(['1', '3', '4', '5']), 'add9')
 
     def test_is_add_chord(self):
         self.assertTrue(is_add_chord(['1', '3', '5', '9']))
