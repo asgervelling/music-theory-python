@@ -1,6 +1,6 @@
 import chords
 
 
-print('E9:', chords.degrees('E9'))
-print('Fmaj#11:', chords.degrees('Fmaj#11'))
-print('As MIDI:', chords.midi_chord('Fmaj#11'))
+print(chords.degrees('E9'))         # ['1', '3', '5', '7', '9']
+print(chords.degrees('Fmaj#11'))    # ['1', '3', '5', 'Δ', '9', '#11']
+print(chords.midi_chord('Fmaj#11'))  # [65, 69, 72, 76, 79, 83]
