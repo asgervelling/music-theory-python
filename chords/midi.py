@@ -1,8 +1,8 @@
 from typing import List
 
-from .notes import is_sharp, is_flat
-from .constants import midi_notes, ERROR
-from .exceptions import InvalidChordException
+from notes import is_sharp, is_flat
+from constants import midi_notes, ERROR
+from exceptions import InvalidChordException
 
 
 def with_accidental_name(note: str) -> str:

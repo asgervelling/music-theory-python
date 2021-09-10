@@ -1,5 +1,5 @@
-from .exceptions import InvalidChordException
-from .constants import chord_intervals
+from exceptions import InvalidChordException
+from constants import chord_intervals
 
 steps = [
     ['1', 'bb2'],

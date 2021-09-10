@@ -1,7 +1,7 @@
 from typing import List
 
-from .constants import synonyms, extensions_beyond_7, chord_intervals, diatonic_extensions
-from .helpers import any_in_list
+from constants import synonyms, extensions_beyond_7, chord_intervals, diatonic_extensions
+from helpers import any_in_list
 
 __all__ = ['chord_notation']
 
@@ -76,7 +76,11 @@ def extentions_are_add_valid(chord_symbols: List[str]) -> bool:
     return chord_symbols[3] in diatonic_extensions.keys()
 
 
-def is_add_chord(chord_symbols: List[str]) -> bool:
+def is_add_chord(chord_notation: str) -> bool:
+    return 'add' in chord_notation.casefold()
+
+
+def is_add_chord_symbols(chord_symbols: List[str]) -> bool:
     """ 'An added tone chord, or added note chord, is a non-tertian chord 
         composed of a tertian triad and an extra "added" note. 
         The added note is not a seventh (three thirds from the chord root),
@@ -88,8 +92,8 @@ def is_add_chord(chord_symbols: List[str]) -> bool:
         never write Aadd6, you would just call it A6. """
     return len(chord_symbols) == 4 and \
         '7' not in chord_symbols and \
-        not is_tertian(chord_symbols) and \
         extentions_are_add_valid(chord_symbols)
+    # not is_tertian(chord_symbols) and \
 
 
 def sus_symbol(chord_symbols: List[str]) -> str:
@@ -102,6 +106,7 @@ def sus_symbol(chord_symbols: List[str]) -> str:
 
 
 def add_symbol(chord_symbols: List[str]):
+    """ Soooo wrong """
     if not is_add_chord(chord_symbols):
         return ''
     # If it's not an add chord, it must contain exactly 4 tones

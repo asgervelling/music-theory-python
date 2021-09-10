@@ -1,7 +1,7 @@
 from typing import List
 
-from .constants import chord_intervals
-from .exceptions import InvalidChordException
+from constants import chord_intervals, implications
+from exceptions import InvalidChordException
 
 
 def remove_any_from_string(substrings: List[str], string: str) -> str:
@@ -52,3 +52,13 @@ def replace_if_exists(string: str, old, new) -> str:
     if old == None or new == None:
         return string
     return string.replace(old, new)
+
+
+def implied_extensions(symbol: str) -> List[str]:
+    """ If a chord contains a 13, it must contain a 7/Maj7, 9 and 11, 
+        unless the chord is an added note chord """
+    for key, val in implications.items():
+        if key in chord_intervals.keys() and key == symbol:
+            return val
+
+    return [symbol]

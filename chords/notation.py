@@ -1,11 +1,13 @@
 import re
 from typing import List
 
-from .constants import chord_intervals, synonyms, valid_add_numbers, ERROR, a_overridden_by_b
-from .exceptions import InvalidChordException
-from .symbols import symbols_with_same_value, largest_symbol, symbols_excluded_by_add, std_name_for_symbol
-from .helpers import any_in_string, remove_any_from_string, remove_a_if_contains_b, remove_equal_value_symbols, replace_if_exists
-from .midi import midi_note, note_names_from_val
+from constants import chord_intervals, synonyms, ERROR, a_overridden_by_b, implications
+from exceptions import InvalidChordException
+from symbols import (number_after_add, symbols_with_same_value, largest_symbol,
+                     symbols_excluded_by_add, std_name_for_symbol)
+from helpers import (any_in_string, remove_any_from_string, remove_a_if_contains_b,
+                     remove_equal_value_symbols, replace_if_exists, implied_extensions)
+from midi import midi_note, note_names_from_val
 
 __all__ = ['degrees', 'midi_chord']
 
@@ -43,7 +45,7 @@ def symbols_in_notation(chord_notation: str) -> List[str]:
     symbols = []
 
     for key in chord_intervals.keys():
-        if key in chord_notation:
+        if key in chord_notation and key != '3':
             symbols.append(key)
 
     if is_major_chord(chord_notation):
@@ -115,30 +117,6 @@ def altered_extensions(chord_notation: str) -> List[str]:
     return [i[0] for i in captured_groups]
 
 
-def implied_extensions(symbol: str) -> List[str]:
-    """ If a chord contains a 13, it must contain a 7/Maj7, 9 and 11, 
-        unless the chord is an added note chord """
-    implications = {
-        'Δ': ['Δ'],
-        'Δ7': ['Δ'],
-        'maj': ['Δ'],
-        'maj7': ['Δ'],
-        'Maj7': ['Δ'],
-        'M': ['Δ'],
-        '9': ['7', '9'],
-        'b9': ['7', 'b9'],
-        '11': ['7', '9', '11'],
-        '#11': ['7', '9', '#11'],
-        '13': ['7', '9', '11', '13']
-    }
-
-    for key, val in implications.items():
-        if key in chord_intervals.keys() and key == symbol:
-            return clean_symbols(val)
-
-    return [symbol]
-
-
 def is_major7_chord(chord_notation: str) -> bool:
     return any_in_string(synonyms['MAJOR7'], chord_notation)
 
@@ -149,6 +127,43 @@ def is_sus_chord(chord_notation: str) -> bool:
 
 def is_add_chord(chord_notation: str) -> bool:
     return 'add' in chord_notation.casefold()
+
+
+def has_multiple_added_tones(chord_notation: str):
+    if not is_add_chord(chord_notation):
+        print(f'{chord_notation} is not an add chord')
+        return False
+    return 'add' in chord_notation.replace('add', '', 1)
+
+
+def added_tones(chord_notation: str):
+    added = []
+    if is_add_chord(chord_notation):
+        remaining = chord_notation
+        while 'add' in remaining:
+            num = number_after_add(remaining)
+            added.append(num)
+            remaining = remaining.replace('add' + str(num), '', 1)
+    return added
+
+
+def is_add_number(symbol: str, chord_notation: str) -> bool:
+    if symbol not in chord_notation or \
+            chord_notation.index(symbol) < 4:   # Earlisest possible index is 4: 'Cadd9'
+        return False
+    num_index = chord_notation.index(symbol)
+    return chord_notation[num_index - 3:num_index] == 'add'
+
+
+def largest_non_add_symbol(chord_symbols, chord_notation):
+    highest_val = 0
+    largest = '1'
+    for symbol in chord_symbols:
+        if chord_intervals[symbol] > highest_val and \
+                not is_add_number(symbol, chord_notation):
+            highest_val = chord_intervals[symbol]
+            largest = symbol
+    return largest
 
 
 def number_after_sus(chord_notation: str):
@@ -178,8 +193,8 @@ def first_assumptions(chord_symbols: List[str], chord_notation: str) -> List[str
     # impl_seventh = implied_seventh(chord_symbols)
 
     impl_extensions = list(set(
-        implied_extensions(largest_symbol(chord_symbols)) +
-        altered_extensions(chord_notation)
+        implied_extensions(largest_non_add_symbol(
+            chord_symbols, chord_notation))
     ))
 
     impl_symbols = [
@@ -208,10 +223,14 @@ def correct_first_assumptions(chord_symbols: List[str], chord_notation: str) -> 
         corrected_symbols = [ext for ext in corrected_symbols if ext != '7']
 
     if is_add_chord(chord_notation):
+        """
         excluded = symbols_excluded_by_add(chord_notation)
         # Broken:
         corrected_symbols = [
             ext for ext in corrected_symbols if ext not in excluded]
+        """
+        for tone in added_tones(chord_notation):
+            corrected_symbols.append(tone)
 
     if is_sus_chord(chord_notation):
         corrected_symbols = without_thirds(corrected_symbols)

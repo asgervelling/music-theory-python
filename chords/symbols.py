@@ -1,9 +1,10 @@
 import re
 from typing import List
 
-from .constants import chord_intervals, synonyms, ERROR, valid_add_numbers
-from .exceptions import InvalidChordException
-from .detect import is_add_chord
+from constants import chord_intervals, synonyms, ERROR, valid_add_numbers, implications, diatonic_extensions
+from exceptions import InvalidChordException
+from detect import is_add_chord
+from helpers import implied_extensions
 
 
 def symbols_with_same_value(value: int) -> List[str]:
@@ -19,6 +20,7 @@ def std_name_for_symbol(symbol: str) -> str:
 
 
 def number_after_add(chord_notation: str):
+    """ Returns the number after the first occurrence of 'add' in a chord. 'Aadd4add9' -> 4. """
     if not is_add_chord(chord_notation):
         return ''
     add_symbol = re.search(r'add\d+', chord_notation).group()  # 'add9'
@@ -35,7 +37,10 @@ def symbols_excluded_by_add(chord_notation: str):
 
     for i, symbol in enumerate(valid_add_numbers):
         if symbol == degree_added:
-            return valid_add_numbers[:i] + ['7']
+            a = list(diatonic_extensions.keys())
+            if symbol in a:
+                return a[:a.index(symbol)]
+    return ['']
 
 
 def largest_symbol(chord_symbols: List[str]) -> str:

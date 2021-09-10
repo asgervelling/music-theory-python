@@ -1,8 +1,8 @@
 import re
 from typing import List
 
-from .scales import find_note_index, note_names
-from .constants import accidentals
+from scales import find_note_index, note_names
+from constants import accidentals
 
 
 def is_sharp(note: str) -> bool:
