@@ -62,3 +62,8 @@ def implied_extensions(symbol: str) -> List[str]:
             return val
 
     return [symbol]
+
+
+def shortest_key_for_val(val: int, dictionary: dict) -> str:
+    candidates = [k for k, v in dictionary.items() if v == val]
+    return min(candidates, key=len)

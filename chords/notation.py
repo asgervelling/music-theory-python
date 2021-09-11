@@ -138,12 +138,11 @@ def has_multiple_added_tones(chord_notation: str):
 
 def added_tones(chord_notation: str):
     added = []
-    if is_add_chord(chord_notation):
-        remaining = chord_notation
-        while 'add' in remaining:
-            num = number_after_add(remaining)
-            added.append(num)
-            remaining = remaining.replace('add' + str(num), '', 1)
+    remaining = chord_notation
+    while 'add' in remaining:
+        num = number_after_add(remaining)
+        added.append(num)
+        remaining = remaining.replace('add' + str(num), '', 1)
     return added
 
 
@@ -223,12 +222,6 @@ def correct_first_assumptions(chord_symbols: List[str], chord_notation: str) -> 
         corrected_symbols = [ext for ext in corrected_symbols if ext != '7']
 
     if is_add_chord(chord_notation):
-        """
-        excluded = symbols_excluded_by_add(chord_notation)
-        # Broken:
-        corrected_symbols = [
-            ext for ext in corrected_symbols if ext not in excluded]
-        """
         for tone in added_tones(chord_notation):
             corrected_symbols.append(tone)
 
@@ -308,9 +301,10 @@ def std_name_for_symbol(symbol: str) -> str:
 
 def std_name_for_note(midi_value: int) -> str:
     """ The standard non-midi name for a note. 60 -> C (and not B#) """
-    midi_notes = note_names_from_val(midi_value, 4)
+    midi_note_names = note_names_from_val(midi_value, 4)
     avoid_these = ['ES', 'FF', 'BS', 'CF']
-    preferred_midi_names = [n for n in midi_notes if n[:2] not in avoid_these]
+    preferred_midi_names = [
+        n for n in midi_note_names if n[:2] not in avoid_these]
 
     name = preferred_midi_names[0]
 
