@@ -1,0 +1,2 @@
+class InvalidChordException(Exception):
+    pass

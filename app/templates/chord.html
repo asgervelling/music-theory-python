@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if title %}
+{{ title }}
+{% endif %}
+{% endblock title %}
+
+{% block content %}
+<h1>{{ chord_notation }}</h1>
+{% for deg in chord_degrees %} {{ deg }}, {% endfor %}
+{% endblock content %}
