@@ -282,7 +282,7 @@ def midi_chord(chord_notation: str, root_note_octave: int = 4) -> List[int]:
 
 def std_name_for_root(chord_notation: str) -> str:
     """ 'A#7b9' -> 'A#' """
-    return re.search(r'^[A-G](#|b|♭)?', chord_notation).group()
+    return re.search(r'^[A-G](#|b|♭)?', chord_notation.upper()).group()
 
 
 def std_name_for_interval(symbol: str) -> str:
