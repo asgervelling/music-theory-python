@@ -1,7 +1,7 @@
 import unittest
 
-from notation import *
-from exceptions import InvalidChordException
+from .notation import *
+from .exceptions import InvalidChordException
 
 
 class TestNotationMethods(unittest.TestCase):

@@ -1,9 +1,9 @@
 from typing import List
 
-from notes import is_sharp, is_flat
-from constants import midi_notes, ERROR
-from exceptions import InvalidChordException
-from helpers import shortest_key_for_val
+from .notes import is_sharp, is_flat
+from .constants import midi_notes, ERROR
+from .exceptions import InvalidChordException
+from .helpers import shortest_key_for_val
 
 
 def _with_accidental_name(note: str) -> str:

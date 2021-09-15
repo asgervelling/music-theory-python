@@ -1,3 +1,3 @@
-from .notation import *
-from .exceptions import *
-from exceptions import InvalidChordException
+from .notation import degrees, midi_chord
+from .exceptions import InvalidChordException
+from .types import Chord

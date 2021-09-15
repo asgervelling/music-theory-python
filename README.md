@@ -1,15 +1,22 @@
 # music-theory-python
 
-```python
-import chords
 
-print(chords.degrees('E9'))         # ['1', '3', '5', '7', '9']
-print(chords.degrees('Fmaj#11'))    # ['1', '3', '5', 'Δ', '9', '#11']
-print(chords.midi_chord('Fmaj#11'))  # [65, 69, 72, 76, 79, 83]
+Run debug environment with hot reloading:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+export FLASK_APP=app.py
+flask run
 ```
 
-### Useful sites for music theory
+Build and run in a container: `docker-compose up --build`
 
-Chord patterns: https://en.wikibooks.org/wiki/Music_Theory/Complete_List_of_Chord_Patterns
+Server is now running on localhost:5000
 
-Midi notes: https://jythonmusic.me/api/midi-constants/pitch/
+```
+curl http://127.0.0.1:5000/chords/Dmaj9/degrees
+>>> ["1", "3", "5", "Δ", "9"]
+
+curl http://127.0.0.1:5000/chords/Dmaj9/midi
+>>> [62, 66, 69, 73, 76]
+```

@@ -1,10 +1,10 @@
 import re
 from typing import List
 
-from constants import chord_intervals, synonyms, ERROR, valid_add_numbers, implications, diatonic_extensions
-from exceptions import InvalidChordException
-from detect import is_add_chord
-from helpers import implied_extensions
+from .constants import chord_intervals, synonyms, ERROR, valid_add_numbers, implications, diatonic_extensions
+from .exceptions import InvalidChordException
+from .detect import is_add_chord
+from .helpers import implied_extensions
 
 
 def symbols_with_same_value(value: int) -> List[str]:

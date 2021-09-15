@@ -1,9 +1,7 @@
 from typing import List
 
-from constants import synonyms, extensions_beyond_7, chord_intervals, diatonic_extensions
-from helpers import any_in_list
-
-__all__ = ['chord_notation']
+from .constants import synonyms, extensions_beyond_7, chord_intervals, diatonic_extensions
+from .helpers import any_in_list
 
 
 def is_triad(chord_symbols: List[str]) -> bool:

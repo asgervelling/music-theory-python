@@ -1,15 +1,13 @@
 import re
 from typing import List
 
-from constants import chord_intervals, synonyms, ERROR, a_overridden_by_b, implications
-from exceptions import InvalidChordException
-from symbols import (number_after_add, symbols_with_same_value, largest_symbol,
-                     symbols_excluded_by_add, std_name_for_symbol)
-from helpers import (any_in_string, remove_any_from_string, remove_a_if_contains_b,
-                     remove_equal_value_symbols, replace_if_exists, implied_extensions)
-from midi import midi_note, note_names_from_val
-
-__all__ = ['degrees', 'midi_chord']
+from .constants import chord_intervals, synonyms, ERROR, a_overridden_by_b, implications
+from .exceptions import InvalidChordException
+from .symbols import (number_after_add, symbols_with_same_value, largest_symbol,
+                      symbols_excluded_by_add, std_name_for_symbol)
+from .helpers import (any_in_string, remove_any_from_string, remove_a_if_contains_b,
+                      remove_equal_value_symbols, replace_if_exists, implied_extensions)
+from .midi import midi_note, note_names_from_val
 
 
 def clean_symbols(symbols: List[str]):
@@ -284,7 +282,8 @@ def midi_chord(chord_notation: str, root_note_octave: int = 4) -> List[int]:
 
 def std_name_for_root(chord_notation: str) -> str:
     """ 'A#7b9' -> 'A#' """
-    return re.search(r'^[A-G](#|b|♭)?', chord_notation).group()
+    print(chord_notation.upper())
+    return re.search(r'^[A-G](#|b|♭)?', chord_notation.upper()).group()
 
 
 def std_name_for_interval(symbol: str) -> str:

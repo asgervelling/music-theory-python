@@ -1,6 +1,6 @@
 import unittest
 
-from midi import *
+from .midi import *
 
 
 class TestMidiMethods(unittest.TestCase):
