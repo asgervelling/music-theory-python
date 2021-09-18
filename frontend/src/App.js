@@ -1,37 +1,17 @@
-import { useState, useEffect } from "react";
 import "./App.css";
+import useFetch from "./hooks/useFetch";
 
 function App() {
-  const [degrees, setDegrees] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetch("http://localhost:5000/chords/Cadd9/degrees", {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((json) => {
-        if ("error" in json) {
-          console.log("Error: " + json.error);
-        } else {
-          console.log("Degrees: " + json);
-          setDegrees(json);
-        }
-      })
-      .catch((err) => {
-        console.log("Fetch error: " + err);
-      });
-  }, []);
-
+  const { degrees, isPending, error } = useFetch(
+    "http://localhost:5000/chords/Am7b5/degrees"
+  );
   return (
     <div className="App">
-      {degrees}
-      {error}
+      {error && "error"}
+
+      {error && <div>{error}</div>}
+      {isPending && <div>Loading...</div>}
+      {degrees && <div>{degrees}</div>}
     </div>
   );
 }
